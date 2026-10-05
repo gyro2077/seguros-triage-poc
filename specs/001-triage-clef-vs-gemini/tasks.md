@@ -1,6 +1,6 @@
 # Tasks: Spec 001 - Triage Engine
 
-- [ ] **T1. Schemas y Contratos de Dominio Actuarial.**
+- [x] **T1. Schemas y Contratos de Dominio Actuarial.**
   - Crear `backend/app/schemas.py` con los modelos Pydantic de entrada, salida y Jira issues según la regulación de seguros.
   - Hecho cuando: `pytest tests/test_schemas.py` valide la serialización de todos los ramos y rechace enums inválidos.
 
