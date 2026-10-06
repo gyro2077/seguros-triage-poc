@@ -16,7 +16,7 @@
   - Crear endpoint `POST /api/triage/compare` que ejecute ambos servicios en paralelo (`asyncio.gather`) y genere el payload de Jira.
   - Hecho cuando: Una llamada cURL a `/api/triage/compare` devuelva ambas respuestas simultáneas con código 200.
 
-- [ ] **T5. Setup del Frontend React + Tailwind.**
+- [x] **T5. Setup del Frontend React + Tailwind.**
   - Inicializar cliente en `/frontend` con Vite, Tailwind CSS y componentes base de diseño oscuro corporativo.
   - Hecho cuando: `npm run build` termine sin errores de TypeScript y la pantalla base renderice en el navegador.
 
