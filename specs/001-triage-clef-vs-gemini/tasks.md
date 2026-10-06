@@ -4,7 +4,7 @@
   - Crear `backend/app/schemas.py` con los modelos Pydantic de entrada, salida y Jira issues según la regulación de seguros.
   - Hecho cuando: `pytest tests/test_schemas.py` valide la serialización de todos los ramos y rechace enums inválidos.
 
-- [ ] **T2. Servicio de Inferencia Local Clef-Flash.**
+- [x] **T2. Servicio de Inferencia Local Clef-Flash.**
   - Implementar `backend/app/services/clef_service.py` cargando `Cloudflare/clef-flash` en 4-bit para la GPU de 8GB.
   - Hecho cuando: Una prueba unitaria confirme inferencia en un solo forward pass en menos de 150 ms sin desbordar la VRAM de la RTX 4060.
 
