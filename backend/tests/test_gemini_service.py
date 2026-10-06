@@ -149,7 +149,7 @@ class TestGeminiStructuredOutputsAndTelemetry:
         full_result = service.triage_full(SAMPLE_CLAIM_TEXT)
 
         assert isinstance(full_result, ModelTriageResult)
-        assert full_result.model_name == "gemini-2.5-flash"
+        assert full_result.model_name == service.model_name
         assert full_result.success is True
         assert full_result.schema_valid is True
         assert full_result.decision is not None

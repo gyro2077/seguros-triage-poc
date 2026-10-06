@@ -92,16 +92,29 @@ class GeminiService:
         )
 
         start_time = time.perf_counter()
-        try:
-            response = self._client.models.generate_content(
-                model=self._model_name,
-                contents=incident_text,
-                config=config,
-            )
-        except Exception as exc:
+        response = None
+        last_exc: Optional[Exception] = None
+        for attempt in range(3):
+            try:
+                response = self._client.models.generate_content(
+                    model=self._model_name,
+                    contents=incident_text,
+                    config=config,
+                )
+                break
+            except Exception as exc:
+                last_exc = exc
+                if attempt < 2 and ("503" in str(exc) or "429" in str(exc) or "UNAVAILABLE" in str(exc)):
+                    time.sleep(1.0 * (attempt + 1))
+                    continue
+                raise GeminiServiceError(
+                    f"Error calling Gemini API ({self._model_name}): {exc}"
+                ) from exc
+
+        if response is None:
             raise GeminiServiceError(
-                f"Error calling Gemini API ({self._model_name}): {exc}"
-            ) from exc
+                f"Error calling Gemini API ({self._model_name}): {last_exc}"
+            )
 
         latency_ms = (time.perf_counter() - start_time) * 1000.0
 

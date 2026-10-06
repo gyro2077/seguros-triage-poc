@@ -1,10 +1,11 @@
 # MEMORY.md - Bitácora de Estado
 ## Estado Actual
-- Fase: Spec 001 - Tarea T3 completada.
+- Fase: Spec 001 - Tarea T4 completada.
 - Modelos acordados: Cloudflare/clef-flash (local, 4-bit NF4) y Google Gemini 2.5 Flash (Cloud, AI Studio).
 - T1 (Schemas y Contratos): Implementados en `backend/app/schemas.py` con 24 tests unitarios pasando en verde en `backend/tests/test_schemas.py`.
 - T2 (Servicio Clef-Flash Local): Implementado en `backend/app/services/clef_service.py` con 3 tests pasando en verde en `backend/tests/test_clef_service.py`.
-- T3 (Servicio Cloud Gemini 2.5 Flash): Implementado en `backend/app/services/gemini_service.py` con SDK oficial `google-genai` (v2.28.0) y 10 tests unitarios/mock pasando en verde en `backend/tests/test_gemini_service.py` (más 1 test condicional de integración real omitido en ausencia de API Key).
+- T3 (Servicio Cloud Gemini 2.5 Flash): Implementado en `backend/app/services/gemini_service.py` con SDK oficial `google-genai` (v2.28.0) y 11 tests pasando en verde (10 mocks + 1 test de integración real `test_gemini_live_integration` validado exitosamente contra Google AI Studio usando `gemini-2.5-flash`). Se registró `GEMINI_MODEL="gemini-2.5-flash"` en `backend/.env` debido a la deprecación de `gemini-2.0-flash` por parte de Google.
+- T4 (Endpoint Comparativo en FastAPI y Mapeador Jira): Implementados `backend/app/services/jira_mapper.py` y `backend/app/main.py` con 11 tests pasando en verde en `tests/test_jira_mapper.py` y `tests/test_api.py`. Soporta ejecución paralela no bloqueante vía `asyncio.to_thread` / `asyncio.gather`, detección de discrepancias actuariales y generación de tickets duales para siniestros P1 o MIXTO.
 
 ## Métricas de Hardware y Telemetría Clef-Flash (RTX 4060 8GB VRAM)
 - Modelo: `Cloudflare/clef-flash` (Backbone Qwen3.5-9B cuantizado 4-bit NF4 + JointSchemaHead en bfloat16).
@@ -23,6 +24,9 @@
 - La telemetría de Gemini extrae `prompt_token_count` y `candidates_token_count` de `usage_metadata`, midiendo la latencia de red+inferencia con `time.perf_counter()`. Se calcula el costo por llamada y proyectado a 100k transacciones con las tarifas oficiales ($0.075 / 1M input tokens, $0.30 / 1M output tokens).
 - Autenticación requiere `GEMINI_API_KEY` o paso explícito al instanciar `GeminiService`, lanzando `RuntimeError("GEMINI_API_KEY no configurada")` si no está presente.
 - La suite de pruebas en `test_gemini_service.py` aísla los tests continuos con `unittest.mock` para cero consumo de cuota ni dependencia de internet, e incluye un test condicional `@pytest.mark.skipif` para integración real cuando se defina la clave.
+- En `jira_mapper.py`, se implementa la lógica de doble ticket (`is_dual_ticket=True`): cualquier siniestro con severidad 1 (P1) o con `macro_ramo == MIXTO` genera automáticamente dos tickets enlazados en Jira: Ticket Patrimonial (componente en Ramos Generales) y Ticket de Personas (componente en Vida/Personas con SLA prioritario de hasta 2 horas).
+- En `main.py`, el endpoint `/api/triage/compare` delega la inferencia de Clef y Gemini a hilos de trabajo mediante `asyncio.to_thread` y los coordina concurrentemente con `asyncio.gather`. Esto previene el bloqueo del event loop de FastAPI durante el forward pass de PyTorch sobre CUDA.
+- Se configuró middleware CORS en FastAPI para permitir integración directa y fluida con el frontend React + Vite en desarrollo.
 
 ## Errores a Evitar
 - No cargar modelos en FP16 en la RTX 4060 (provoca Out Of Memory).

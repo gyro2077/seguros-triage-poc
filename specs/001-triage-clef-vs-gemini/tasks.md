@@ -12,7 +12,7 @@
   - Implementar `backend/app/services/gemini_service.py` con Google GenAI SDK forzando JSON schema tipado.
   - Hecho cuando: El servicio devuelva la estructura de clasificación junto con métricas de tokens consumidos y latencia de red.
 
-- [ ] **T4. Endpoint Comparativo en FastAPI y Mapeador Jira.**
+- [x] **T4. Endpoint Comparativo en FastAPI y Mapeador Jira.**
   - Crear endpoint `POST /api/triage/compare` que ejecute ambos servicios en paralelo (`asyncio.gather`) y genere el payload de Jira.
   - Hecho cuando: Una llamada cURL a `/api/triage/compare` devuelva ambas respuestas simultáneas con código 200.
 

@@ -251,7 +251,7 @@ class TestComparisonResponseSchemas:
             metrics=metrics_clef,
         )
         gemini_res = ModelTriageResult(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-3.8-flash",
             success=True,
             schema_valid=True,
             metrics=metrics_gemini,
