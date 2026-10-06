@@ -1,9 +1,10 @@
 # MEMORY.md - Bitácora de Estado
 ## Estado Actual
-- Fase: Spec 001 - Tarea T2 completada.
+- Fase: Spec 001 - Tarea T3 completada.
 - Modelos acordados: Cloudflare/clef-flash (local, 4-bit NF4) y Google Gemini 2.5 Flash (Cloud, AI Studio).
 - T1 (Schemas y Contratos): Implementados en `backend/app/schemas.py` con 24 tests unitarios pasando en verde en `backend/tests/test_schemas.py`.
 - T2 (Servicio Clef-Flash Local): Implementado en `backend/app/services/clef_service.py` con 3 tests pasando en verde en `backend/tests/test_clef_service.py`.
+- T3 (Servicio Cloud Gemini 2.5 Flash): Implementado en `backend/app/services/gemini_service.py` con SDK oficial `google-genai` (v2.28.0) y 10 tests unitarios/mock pasando en verde en `backend/tests/test_gemini_service.py` (más 1 test condicional de integración real omitido en ausencia de API Key).
 
 ## Métricas de Hardware y Telemetría Clef-Flash (RTX 4060 8GB VRAM)
 - Modelo: `Cloudflare/clef-flash` (Backbone Qwen3.5-9B cuantizado 4-bit NF4 + JointSchemaHead en bfloat16).
@@ -18,7 +19,10 @@
 - Frontend se desarrollará con React + Tailwind para permitir visualizaciones paralelas con streaming real.
 - Backend configurado con virtualenv Python 3.11.15 (`backend/.venv`) vía `uv` para garantizar compatibilidad estricta con Pydantic v2 y futuros frameworks de inferencia (PyTorch/Transformers) en CachyOS.
 - Modelos Pydantic incluyen validación cruzada actuarial estricta: consistencia entre Macro-Ramo y Ramo Específico, validación de catálogos cerrados y rangos de severidad con mapeo SLA Jira.
-- En `clef_service.py`, se distribuye el modelo mediante `device_map` colocando la torre visual (`model.visual`), `embed_tokens` y la matriz léxica `lm_head` en CPU, mientras las 32 capas transformadoras del lenguaje corren en GPU con cuantización NF4 4-bit de BitsAndBytes. Esto garantiza no sobrepasar los 8 GB de VRAM de la RTX 4060 sin penalizar la evaluación del Joint Schema Head.
+- En `gemini_service.py`, se utiliza el SDK unificado oficial `google-genai` (v2.28.0) con el modelo `gemini-2.5-flash` (configurable vía `GEMINI_MODEL`). Se configuran Structured Outputs forzando `response_mime_type="application/json"` y `response_schema=TriageDecision` con `temperature=0.0` para garantizar determinismo y cumplimiento estricto del contrato actuarial sin regex frágiles.
+- La telemetría de Gemini extrae `prompt_token_count` y `candidates_token_count` de `usage_metadata`, midiendo la latencia de red+inferencia con `time.perf_counter()`. Se calcula el costo por llamada y proyectado a 100k transacciones con las tarifas oficiales ($0.075 / 1M input tokens, $0.30 / 1M output tokens).
+- Autenticación requiere `GEMINI_API_KEY` o paso explícito al instanciar `GeminiService`, lanzando `RuntimeError("GEMINI_API_KEY no configurada")` si no está presente.
+- La suite de pruebas en `test_gemini_service.py` aísla los tests continuos con `unittest.mock` para cero consumo de cuota ni dependencia de internet, e incluye un test condicional `@pytest.mark.skipif` para integración real cuando se defina la clave.
 
 ## Errores a Evitar
 - No cargar modelos en FP16 en la RTX 4060 (provoca Out Of Memory).

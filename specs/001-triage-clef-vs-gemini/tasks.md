@@ -8,7 +8,7 @@
   - Implementar `backend/app/services/clef_service.py` cargando `Cloudflare/clef-flash` en 4-bit para la GPU de 8GB.
   - Hecho cuando: Una prueba unitaria confirme inferencia en un solo forward pass en menos de 150 ms sin desbordar la VRAM de la RTX 4060.
 
-- [ ] **T3. Servicio Cloud Gemini 2.5 Flash.**
+- [x] **T3. Servicio Cloud Gemini 2.5 Flash.**
   - Implementar `backend/app/services/gemini_service.py` con Google GenAI SDK forzando JSON schema tipado.
   - Hecho cuando: El servicio devuelva la estructura de clasificación junto con métricas de tokens consumidos y latencia de red.
 
