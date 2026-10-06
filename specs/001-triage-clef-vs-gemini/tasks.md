@@ -20,6 +20,6 @@
   - Inicializar cliente en `/frontend` con Vite, Tailwind CSS y componentes base de diseño oscuro corporativo.
   - Hecho cuando: `npm run build` termine sin errores de TypeScript y la pantalla base renderice en el navegador.
 
-- [ ] **T6. Integración y Validación de la Demo Visual.**
+- [x] **T6. Integración y Validación de la Demo Visual.**
   - Conectar el formulario de incidentes al backend y construir los paneles de resultados, latencia comparativa y simulador de costos.
   - Hecho cuando: Al enviar un siniestro de prueba, la interfaz pinte las tarjetas de Clef (verde, ultra-rápida) y Gemini, renderizando los tickets enlazados de Jira correspondientes.

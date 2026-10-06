@@ -11,6 +11,7 @@ import {
   HeartPulse,
   Scale,
   Zap,
+  Loader2,
 } from 'lucide-react';
 import type { ModelTriageResult, Severidad } from '../types/triage';
 
@@ -18,6 +19,7 @@ interface ComparisonCardsProps {
   clefResult?: ModelTriageResult | null;
   geminiResult?: ModelTriageResult | null;
   discrepancyDetected?: boolean;
+  isLoading?: boolean;
 }
 
 const SEVERITY_CONFIG: Record<Severidad, { label: string; bg: string; text: string; border: string }> = {
@@ -31,6 +33,7 @@ export const ComparisonCards: React.FC<ComparisonCardsProps> = ({
   clefResult,
   geminiResult,
   discrepancyDetected = false,
+  isLoading = false,
 }) => {
   return (
     <div className="space-y-3">
@@ -55,6 +58,7 @@ export const ComparisonCards: React.FC<ComparisonCardsProps> = ({
           accentColor="emerald"
           result={clefResult}
           isLocal={true}
+          isLoading={isLoading}
         />
 
         {/* Gemini 2.5 Flash Card (System 2) */}
@@ -66,6 +70,7 @@ export const ComparisonCards: React.FC<ComparisonCardsProps> = ({
           accentColor="sky"
           result={geminiResult}
           isLocal={false}
+          isLoading={isLoading}
         />
       </div>
     </div>
@@ -80,6 +85,7 @@ interface ModelCardProps {
   accentColor: 'emerald' | 'sky';
   result?: ModelTriageResult | null;
   isLocal: boolean;
+  isLoading?: boolean;
 }
 
 const ModelCard: React.FC<ModelCardProps> = ({
@@ -90,10 +96,51 @@ const ModelCard: React.FC<ModelCardProps> = ({
   accentColor,
   result,
   isLocal,
+  isLoading = false,
 }) => {
   const isEmerald = accentColor === 'emerald';
   const cardBorder = isEmerald ? 'border-emerald-500/20 hover:border-emerald-500/40' : 'border-sky-500/20 hover:border-sky-500/40';
   const headerBg = isEmerald ? 'bg-emerald-950/20' : 'bg-sky-950/20';
+
+  if (isLoading) {
+    return (
+      <div className={`bg-zinc-900/90 border ${cardBorder} rounded-xl overflow-hidden shadow-lg flex flex-col justify-between min-h-[300px] animate-pulse`}>
+        <div className={`p-4 border-b border-zinc-800/80 ${headerBg} flex items-center justify-between`}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700/60 flex items-center justify-center">
+              {icon}
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white">{title}</h4>
+              <p className="text-[11px] text-zinc-400">{subtitle}</p>
+            </div>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs text-zinc-400 bg-zinc-950/60 px-2 py-1 rounded border border-zinc-800">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+            {isLocal ? 'Ejecutando forward pass...' : 'Consultando Gemini...'}
+          </span>
+        </div>
+
+        <div className="p-4 space-y-3 flex-1">
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="h-14 bg-zinc-950/60 rounded-lg border border-zinc-800/80 animate-pulse" />
+            <div className="h-14 bg-zinc-950/60 rounded-lg border border-zinc-800/80 animate-pulse" />
+          </div>
+          <div className="h-10 bg-zinc-950/60 rounded-lg border border-zinc-800/80 animate-pulse" />
+          <div className="flex gap-2">
+            <div className="h-7 w-28 bg-zinc-950/60 rounded-md border border-zinc-800/80 animate-pulse" />
+            <div className="h-7 w-28 bg-zinc-950/60 rounded-md border border-zinc-800/80 animate-pulse" />
+          </div>
+        </div>
+
+        <div className="p-3.5 bg-zinc-950/80 border-t border-zinc-800/80 grid grid-cols-3 gap-2">
+          <div className="h-9 bg-zinc-900/60 rounded border border-zinc-800/60" />
+          <div className="h-9 bg-zinc-900/60 rounded border border-zinc-800/60" />
+          <div className="h-9 bg-zinc-900/60 rounded border border-zinc-800/60" />
+        </div>
+      </div>
+    );
+  }
 
   if (!result) {
     return (

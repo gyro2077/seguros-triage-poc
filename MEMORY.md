@@ -1,12 +1,13 @@
 # MEMORY.md - Bitácora de Estado
 ## Estado Actual
-- Fase: Spec 001 - Tarea T5 completada.
+- Fase: Spec 001 Implementada y Validada.
 - Modelos acordados: Cloudflare/clef-flash (local, 4-bit NF4) y Google Gemini 2.5 Flash (Cloud, AI Studio).
 - T1 (Schemas y Contratos): Implementados en `backend/app/schemas.py` con 24 tests unitarios pasando en verde en `backend/tests/test_schemas.py`.
 - T2 (Servicio Clef-Flash Local): Implementado en `backend/app/services/clef_service.py` con 3 tests pasando en verde en `backend/tests/test_clef_service.py`.
 - T3 (Servicio Cloud Gemini 2.5 Flash): Implementado en `backend/app/services/gemini_service.py` con SDK oficial `google-genai` (v2.28.0) y 11 tests pasando en verde (10 mocks + 1 test de integración real `test_gemini_live_integration` validado exitosamente contra Google AI Studio usando `gemini-2.5-flash`). Se registró `GEMINI_MODEL="gemini-2.5-flash"` en `backend/.env` debido a la deprecación de `gemini-2.0-flash` por parte de Google.
 - T4 (Endpoint Comparativo en FastAPI y Mapeador Jira): Implementados `backend/app/services/jira_mapper.py` y `backend/app/main.py` con 11 tests pasando en verde en `tests/test_jira_mapper.py` y `tests/test_api.py`. Soporta ejecución paralela no bloqueante vía `asyncio.to_thread` / `asyncio.gather`, detección de discrepancias actuariales y generación de tickets duales para siniestros P1 o MIXTO.
 - T5 (Setup del Frontend React + Tailwind CSS): Inicializado en `/frontend` con Vite, React 19, TypeScript, Tailwind CSS y Lucide-React. Tipado estricto en `frontend/src/types/triage.ts`, proxy a `http://localhost:8000` y componentes base estructurados (`Header`, `ClaimInput`, `ComparisonCards`, `JiraPreview`, `CostAnalysis`). Compilación exitosa en verde (`npm run build`).
+- T6 (Integración E2E y Validación Visual): Conexión bidireccional cliente-servidor verificada con FastAPI (:8000) y Vite (:5173). Flujo cruzado auditado en `tests/test_e2e_flow.py` (4 tests pasando en verde) validando requisitos RF-1 a RF-6 y casos de prueba (colapso de grúa generando tickets duales y choque leve con ticket simple P3). Servidores activos y verificados mediante HTTP.
 
 ## Métricas de Hardware y Telemetría Clef-Flash (RTX 4060 8GB VRAM)
 - Modelo: `Cloudflare/clef-flash` (Backbone Qwen3.5-9B cuantizado 4-bit NF4 + JointSchemaHead en bfloat16).
